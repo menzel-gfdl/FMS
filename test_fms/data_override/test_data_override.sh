@@ -1,3 +1,2 @@
 #!/bin/sh
-export PATH="$PATH:../bats/bin"
-bats test_data_override.bats
+mpirun -n 6 ./test_data_override
