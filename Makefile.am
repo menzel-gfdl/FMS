@@ -11,7 +11,6 @@ time_interp diag_integral column_diagnostics block_control \
 data_override astronomy field_manager coupler monin_obukhov \
 interpolator fft amip_interp oda_tools exchange topography \
 tracer_manager station_data sat_vapor_pres random_numbers libFMS \
-test_fms/diag_manager test_fms/data_override test_fms/exchange \
-test_fms/mpp test_fms/mpp_io
+test_fms/data_override
 
 EXTRA_DIST = README.md
