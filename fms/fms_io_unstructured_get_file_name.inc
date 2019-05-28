@@ -55,7 +55,7 @@ function fms_io_unstructured_get_file_name(orig_file, &
 
    !Local variables
     logical(INT_KIND)      :: fexist          !<Flag that tells if a file exists.
-    type(domainUG),pointer :: io_domain       !<Pointer to an unstructured I/O domain.
+    type(domainUG)         :: io_domain       !<Pointer to an unstructured I/O domain.
     integer(INT_KIND)      :: io_tile_id      !<Tile id for the I/O domain.
     character(len=256)     :: fname           !<A character buffer used to test different file names.
     character(len=512)     :: actual_file_tmp !<A character buffer used to test different file names.
@@ -90,12 +90,10 @@ function fms_io_unstructured_get_file_name(orig_file, &
 
    !Point to the I/O domain for the unstructured grid.  This function call
    !will throw a fatal error if the I/O domain does not exist.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
 
    !Get the tile id for the I/O domain.
     io_tile_id = mpp_get_UG_domain_tile_id(io_domain)
-    io_domain => null()
 
    !Check if the file has the I/O domain's tile id appended to the end of its
    !name.  For a file named foo.nc, this would become foo.nc.yyyy, where
@@ -140,11 +138,10 @@ function fms_io_unstructured_get_file_name(orig_file, &
 
        !Point to the I/O domain for the unstructured grid.  This function call
        !will throw a fatal error if the I/O domain does not exist.
-        io_domain => mpp_get_UG_io_domain(domain)
+        io_domain = mpp_get_UG_io_domain(domain)
 
        !Get the tile id for the I/O domain.
         io_tile_id = mpp_get_UG_domain_tile_id(io_domain)
-        io_domain => null()
 
        !Check if the file has the I/O domain's tile id appended to the end of
        !its name.  If it does then set the read_dist and does_file_exist flags

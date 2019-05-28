@@ -66,7 +66,7 @@ MODULE diag_util_mod
   USE fms_io_mod, ONLY: get_tile_string, return_domain, string, get_instance_filename
   USE mpp_domains_mod,ONLY: domain1d, domain2d, mpp_get_compute_domain, null_domain1d, null_domain2d,&
        & OPERATOR(.NE.), OPERATOR(.EQ.), mpp_modify_domain, mpp_get_domain_components,&
-       & mpp_get_ntile_count, mpp_get_current_ntile, mpp_get_tile_id, mpp_mosaic_defined, mpp_get_tile_npes,&
+       & mpp_get_ntile_count, mpp_get_current_ntile, mpp_get_tile_id, mpp_get_tile_npes,&
        & domainUG, null_domainUG
   USE time_manager_mod,ONLY: time_type, OPERATOR(==), OPERATOR(>), NO_CALENDAR, increment_date,&
        & increment_time, get_calendar_type, get_date, get_time, leap_year, OPERATOR(-),&
@@ -1071,6 +1071,17 @@ CONTAINS
                              !! contained differences from the previous.
     REAL, DIMENSION(1) :: tdata
     CHARACTER(len=128) :: time_units_str
+    INTEGER :: i
+
+    !Check for duplicates, and error if found.
+    DO i = 1,num_files
+        IF (trim(files(i)%name) .eq. trim(name)) THEN
+            call error_mesg("diag_util_mod::init_file", &
+                            "file "//trim(name)//" is defined more than" &
+                                //" once in the diag_table.", &
+                            FATAL)
+        ENDIF
+    ENDDO
 
     ! Check if this file has already been defined
     same_file_err=.FALSE. ! To indicate that if this file was previously defined

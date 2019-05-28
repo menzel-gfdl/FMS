@@ -229,10 +229,10 @@ void get_var_data(const char *file, const char *name, void *data)
 {
 
   int ncid, varid, status;
-  nc_type vartype;
-  char msg[512];
-
+ char msg[512];
 #ifdef use_netCDF
+  nc_type vartype;
+
   status = nc_open(file, NC_NOWRITE, &ncid);
   if(status != NC_NOERR) {
     sprintf(msg, "in opening file %s", file);
@@ -289,10 +289,10 @@ void get_var_data_region(const char *file, const char *name, const size_t *start
 {
 
   int ncid, varid, status;
-  nc_type vartype;
   char msg[512];
-
 #ifdef use_netCDF
+  nc_type vartype;
+
   status = nc_open(file, NC_NOWRITE, &ncid);
   if(status != NC_NOERR) {
     sprintf(msg, "get_var_data_region: in opening file %s", file);

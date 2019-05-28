@@ -42,7 +42,7 @@
 
       integer, allocatable :: pelist(:)
       integer :: npes, p, threading_flag
-      type(domain2d), pointer :: io_domain=>NULL()
+      type(domain2d) :: io_domain
       logical :: compute_chksum,print_compressed_chksum
       integer(LONG_KIND) ::chk
 
@@ -61,8 +61,8 @@
 	 call read_record(unit,field,size(data(:,:)),data,tindex,start_in=start, axsiz_in=nread)
       else if( threading_flag == MPP_SINGLE ) then
 
-	 io_domain=>mpp_get_io_domain(domain)
-	 if(.not. ASSOCIATED(io_domain)) call mpp_error( FATAL, 'MPP_READ_COMPRESSED_2D_: io_domain must be defined.' )
+	 io_domain=mpp_get_io_domain(domain)
+	 if(.not. mpp_domain_is_defined(io_domain)) call mpp_error( FATAL, 'MPP_READ_COMPRESSED_2D_: io_domain must be defined.' )
 	 npes = mpp_get_domain_npes(io_domain)
 	 allocate(pelist(npes))
 	 call mpp_get_pelist(io_domain,pelist)
@@ -136,7 +136,7 @@
 
       integer, allocatable :: pelist(:)
       integer :: npes, p, threading_flag
-      type(domain2d), pointer :: io_domain=>NULL()
+      type(domain2d) :: io_domain
       logical :: compute_chksum,print_compressed_chksum
       integer(LONG_KIND) ::chk
 
@@ -154,8 +154,8 @@
 	 call read_record(unit,field,size(data(:,:,:)),data,tindex,start_in=start, axsiz_in=nread)
       else if( threading_flag == MPP_SINGLE ) then
 
-	 io_domain=>mpp_get_io_domain(domain)
-	 if(.not. ASSOCIATED(io_domain)) call mpp_error( FATAL, 'MPP_READ_COMPRESSED_3D_: io_domain must be defined.' )
+	 io_domain=mpp_get_io_domain(domain)
+	 if(.not. mpp_domain_is_defined(io_domain)) call mpp_error( FATAL, 'MPP_READ_COMPRESSED_3D_: io_domain must be defined.' )
 	 npes = mpp_get_domain_npes(io_domain)
 	 allocate(pelist(npes))
 	 call mpp_get_pelist(io_domain,pelist)

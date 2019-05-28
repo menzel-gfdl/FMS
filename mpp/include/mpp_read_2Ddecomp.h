@@ -143,7 +143,7 @@
 
 
       integer :: i, error, is, ie, js, je, isg, ieg, jsg, jeg
-      type(domain2d), pointer :: io_domain=>NULL()
+      type(domain2d) :: io_domain
 
       if (.not.PRESENT(time_level)) then
           tlevel = 0
@@ -219,12 +219,11 @@
                     end if
                  end if
               else if( mpp_file(unit)%io_domain_exist ) then
-                 io_domain=>mpp_get_io_domain(domain)
+                 io_domain=mpp_get_io_domain(domain)
                  call mpp_get_compute_domain( io_domain, is,  ie,  js,  je, tile_count=tile_count, position=position  )
                  call mpp_get_global_domain ( io_domain, isg, ieg, jsg, jeg, tile_count=tile_count, position=position )
                  start(1) = is - isg + 1
                  start(2) = js - jsg + 1
-                 io_domain => NULL()
               end if
           end if
       endif

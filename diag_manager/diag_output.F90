@@ -222,7 +222,7 @@ CONTAINS
     INTEGER              :: gbegin, gend, gsize, ndivs
     LOGICAL              :: time_ops1
     CHARACTER(len=2048)  :: err_msg
-    type(domainUG),pointer                     :: io_domain
+    type(domainUG)                             :: io_domain
     integer(INT_KIND)                          :: io_domain_npes
     integer(INT_KIND),dimension(:),allocatable :: io_pelist
     integer(INT_KIND),dimension(:),allocatable :: unstruct_axis_sizes
@@ -291,8 +291,7 @@ CONTAINS
                                      //" write unstructured axis metadata.", &
                                      FATAL)
                  endif
-                 io_domain => null()
-                 io_domain => mpp_get_UG_io_domain(DomainU)
+                 io_domain = mpp_get_UG_io_domain(DomainU)
                  io_domain_npes = mpp_get_UG_domain_npes(io_domain)
                  allocate(io_pelist(io_domain_npes))
                  call mpp_get_UG_domain_pelist(io_domain, &
@@ -324,7 +323,6 @@ CONTAINS
                  deallocate(io_pelist)
                  deallocate(unstruct_axis_sizes)
                  deallocate(unstruct_axis_data)
-                 io_domain => null()
 
              else
                  CALL mpp_write_meta(file_unit, Axis_types(num_axis_in_file), axis_name,&
