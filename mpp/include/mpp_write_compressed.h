@@ -72,7 +72,7 @@
       integer, allocatable :: pelist(:)
       integer, allocatable :: nz_gather(:)
       integer :: i,j,nz,nelems,mynelems,idx,npes
-      type(domain2d), pointer :: io_domain=>NULL()
+      type(domain2d) :: io_domain
 
       call mpp_clock_begin(mpp_write_clock)
 
@@ -82,8 +82,8 @@
       fill = 0
       if(PRESENT(default_data)) fill = default_data
 
-      io_domain=>mpp_get_io_domain(domain)
-      if (.not. ASSOCIATED(io_domain)) call mpp_error( FATAL, 'MPP_WRITE_COMPRESSED_2D_: io_domain must be defined.' )
+      io_domain=mpp_get_io_domain(domain)
+      if (.not. mpp_domain_is_defined(io_domain)) call mpp_error( FATAL, 'MPP_WRITE_COMPRESSED_2D_: io_domain must be defined.' )
       npes = mpp_get_domain_npes(io_domain)
       allocate(pelist(npes))
       call mpp_get_pelist(io_domain,pelist)

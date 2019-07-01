@@ -42,7 +42,7 @@ subroutine fms_io_unstructured_setup_one_field(fileObj, &
     integer(INT_KIND),dimension(:),intent(in)    :: field_dimension_order !<Array telling the ordering of the dimensions for the field.
     integer(INT_KIND),dimension(NIDX),intent(in) :: field_dimension_sizes !<Array of sizes of the dimensions of the inputted field.
     integer(INT_KIND),intent(out)                :: index_field           !<Index of the inputted field in the fileObj%var array.
-    type(domainUG),intent(in),target             :: domain                !<An unstructured mpp domain.
+    type(domainUG),intent(in)                    :: domain                !<An unstructured mpp domain.
     logical(INT_KIND),intent(in),optional        :: mandatory             !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional                     :: data_default          !<A default value for the data.
     character(len=*),intent(in),optional         :: longname              !<A more descriptive name of the field.
@@ -288,7 +288,7 @@ subroutine fms_io_unstructured_setup_one_field(fileObj, &
         cur_var => fileObj%var(index_field)
 
        !Point to the inputted unstructured domain.
-        cur_var%domain_ug => domain
+        cur_var%domain_ug = domain
 
        !Copy in the dimension sizes of the data domain (siz, used for
        !writes), and of the global domain (gsiz, used for reads).

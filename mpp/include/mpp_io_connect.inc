@@ -210,8 +210,8 @@
 
 !----------
 !ug support
-      type(domain2d),pointer :: io_domain
-      type(domainUG),pointer :: io_domain_ug
+      type(domain2d) :: io_domain
+      type(domainUG) :: io_domain_ug
       integer(INT_KIND)      :: io_layout_ug
       integer(INT_KIND)      :: tile_id_ug
 !----------
@@ -235,9 +235,6 @@
                          //" present in the same mpp_open call.")
       endif
 
-     !Null initialize the unstructured I/O domain pointer.
-      io_domain => null()
-      io_domain_ug => null()
 !----------
      
       call mpp_clock_begin(mpp_open_clock)
@@ -265,13 +262,13 @@
 
       io_domain_exist = .false.
       if( PRESENT(domain) ) then
-         io_domain => mpp_get_io_domain(domain)
-         if(associated(io_domain)) io_domain_exist = .true.
+         io_domain = mpp_get_io_domain(domain)
+         if(mpp_domain_is_defined(io_domain)) io_domain_exist = .true.
 
 !----------
 !ug support
       elseif (present(domain_ug)) then
-          io_domain_ug => mpp_get_UG_io_domain(domain_ug)
+          io_domain_ug = mpp_get_UG_io_domain(domain_ug)
           io_domain_exist = .true.
 !----------
 
@@ -298,10 +295,10 @@
 
 !----------
 !ug support
-          if (associated(io_domain)) then
+          if (mpp_domain_is_defined(io_domain)) then
              ! in this case, only write out from the root_pe of io_domain.
               write_on_this_pe = mpp_domain_is_tile_root_pe(io_domain)
-          elseif (associated(io_domain_ug)) then
+          elseif (mpp_domainUG_is_defined(io_domain_ug)) then
               write_on_this_pe = mpp_domain_UG_is_tile_root_pe(io_domain_ug)
           endif
 !----------
@@ -337,13 +334,12 @@
       mpp_file(unit)%read_on_this_pe  = read_on_this_pe
       mpp_file(unit)%io_domain_exist  = io_domain_exist
       if( PRESENT(domain) ) then
-         allocate(mpp_file(unit)%domain)
          mpp_file(unit)%domain = domain
 
 !----------
 !ug support
       elseif (present(domain_ug)) then
-          mpp_file(unit)%domain_ug => domain_ug
+          mpp_file(unit)%domain_ug = domain_ug
 !----------
 
       endif
@@ -807,16 +803,6 @@
           end if
       end if   
 
-!----------
-!ug support
-     !<Nullify local pointers.
-      if (associated(io_domain)) then
-          io_domain => NULL()
-      endif
-      if (associated(io_domain_ug)) then
-          io_domain_ug => null()
-      endif
-!----------
 
       call mpp_clock_end(mpp_open_clock)              
       return
@@ -969,12 +955,6 @@
      !<There was a memory leak here.  The mpp_file(unit)%domain was set
      !!to point to null without begin deallocated first (it is allocated
      !!in mpp_open above).
-      if (associated(mpp_file(unit)%domain)) then
-          deallocate(mpp_file(unit)%domain)
-          mpp_file(unit)%domain => null()
-      elseif (associated(mpp_file(unit)%domain_ug)) then
-          mpp_file(unit)%domain_ug => null()
-      endif
 !----------
 
       call mpp_clock_end(mpp_close_clock)

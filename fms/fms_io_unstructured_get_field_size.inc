@@ -35,7 +35,7 @@ subroutine fms_io_unstructured_get_field_size(filename, &
     logical,intent(out),optional       :: field_found           !<Flag telling if the inputted field was found in the inputted file.
 
    !Local variables
-    type(domainUG),pointer                     :: io_domain       !<Pointer to the unstructured I/O domain.
+    type(domainUG)                             :: io_domain       !<Pointer to the unstructured I/O domain.
     integer(INT_KIND)                          :: io_domain_npes  !<The total number of ranks in an I/O domain pelist.
     integer(INT_KIND),dimension(:),allocatable :: pelist          !<A pelist.
     integer(INT_KIND)                          :: funit           !<File unit for the inputted file.
@@ -53,17 +53,13 @@ subroutine fms_io_unstructured_get_field_size(filename, &
     integer(INT_KIND)                          :: i               !<Loop variable.
     integer(INT_KIND)                          :: j               !<Loop variable.
 
-   !Point to the I/O domain associated with the inputted unstructured mpp
-   !domain.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
 
    !Get the pelist associated with the I/O domain.
     io_domain_npes = mpp_get_UG_domain_npes(io_domain)
     allocate(pelist(io_domain_npes))
     call mpp_get_UG_domain_pelist(io_domain, &
                                   pelist)
-    io_domain => null()
 
    !Get the file unit for the inputted file.
     call fms_io_unstructured_file_unit(filename, &
@@ -145,6 +141,7 @@ subroutine fms_io_unstructured_get_field_size(filename, &
     if (mpp_pe() .eq. pelist(1)) then
         do i = 2,io_domain_npes
             call mpp_send(found, &
+                          1, &
                           pelist(i), &
                           tag=COMM_TAG_1)
             call mpp_send(field_dimension_sizes, &
@@ -155,6 +152,7 @@ subroutine fms_io_unstructured_get_field_size(filename, &
         call mpp_sync_self()
     else
         call mpp_recv(found, &
+                      1, &
                       pelist(1), &
                       block = .false., &
                       tag=COMM_TAG_1)

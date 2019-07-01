@@ -40,7 +40,7 @@ function fms_io_unstructured_register_restart_field_r_0d(fileObj, &
     character(len=*),intent(in)           :: filename          !<The name of a file.
     character(len=*),intent(in)           :: fieldname         !<The name of a field.
     real,intent(in),target                :: fdata_0d          !<Some data.
-    type(domainUG),intent(in),target      :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)             :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional           :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional              :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional  :: longname          !<A more descriptive name of the field.
@@ -50,7 +50,7 @@ function fms_io_unstructured_register_restart_field_r_0d(fileObj, &
     integer(INT_KIND)                     :: restart_index     !<Index of the inputted field in the fileObj%var array.
 
    !Local variables
-    type(domainUG),pointer                     :: io_domain             !<Pointer to an unstructured I/O domain.
+    type(domainUG)                             :: io_domain             !<Pointer to an unstructured I/O domain.
     integer(INT_KIND)                          :: io_domain_npes        !<The number of ranks in the unstructured I/O domain pelist.
     integer(INT_KIND),dimension(:),allocatable :: pelist                !<A pelist.
     real,dimension(:),allocatable              :: fdata_per_rank        !<Array used to gather the scalar field values.
@@ -67,8 +67,7 @@ function fms_io_unstructured_register_restart_field_r_0d(fileObj, &
 
    !Make sure that the value of the scalar field is same across all ranks
    !in an I/O domain pelist.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
     io_domain_npes = mpp_get_UG_domain_npes(io_domain)
     allocate(pelist(io_domain_npes))
     call mpp_get_UG_domain_pelist(io_domain, &
@@ -87,7 +86,6 @@ function fms_io_unstructured_register_restart_field_r_0d(fileObj, &
                            //" all ranks in the I/O domain pelist.")
         endif
     endif
-    io_domain => null()
     deallocate(pelist)
     deallocate(fdata_per_rank)
 
@@ -153,7 +151,7 @@ function fms_io_unstructured_register_restart_field_r_1d(fileObj, &
     character(len=*),intent(in)           :: fieldname         !<The name of a field.
     real,dimension(:),intent(in),target   :: fdata_1d          !<Some data.
     integer(INT_KIND),dimension(1)        :: fdata_1d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target      :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)             :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional           :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional              :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional  :: longname          !<A more descriptive name of the field.
@@ -270,7 +268,7 @@ function fms_io_unstructured_register_restart_field_r_2d(fileObj, &
     character(len=*),intent(in)           :: fieldname         !<The name of a field.
     real,dimension(:,:),intent(in),target :: fdata_2d          !<Some data.
     integer(INT_KIND),dimension(2)        :: fdata_2d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target      :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)             :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional           :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional              :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional  :: longname          !<A more descriptive name of the field.
@@ -428,7 +426,7 @@ function fms_io_unstructured_register_restart_field_r_3d(fileObj, &
     character(len=*),intent(in)             :: fieldname         !<The name of a field.
     real,dimension(:,:,:),intent(in),target :: fdata_3d          !<Some data.
     integer(INT_KIND),dimension(3)          :: fdata_3d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target        :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)               :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional             :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional                :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional    :: longname          !<A more descriptive name of the field.
@@ -615,7 +613,7 @@ function fms_io_unstructured_register_restart_field_r8_2d(fileObj, &
     character(len=*),intent(in)           :: fieldname         !<The name of a field.
     real(DOUBLE_KIND),dimension(:,:),intent(in),target :: fdata_2d          !<Some data.
     integer(INT_KIND),dimension(2)        :: fdata_2d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target      :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)             :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional           :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real(DOUBLE_KIND),intent(in),optional              :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional  :: longname          !<A more descriptive name of the field.
@@ -778,7 +776,7 @@ function fms_io_unstructured_register_restart_field_r8_3d(fileObj, &
     character(len=*),intent(in)             :: fieldname         !<The name of a field.
     real(DOUBLE_KIND),dimension(:,:,:),intent(in),target :: fdata_3d          !<Some data.
     integer(INT_KIND),dimension(3)          :: fdata_3d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target        :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)               :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional             :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real(DOUBLE_KIND),intent(in),optional                :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional    :: longname          !<A more descriptive name of the field.
@@ -966,7 +964,7 @@ function fms_io_unstructured_register_restart_field_i_0d(fileObj, &
     character(len=*),intent(in)           :: filename          !<The name of a file.
     character(len=*),intent(in)           :: fieldname         !<The name of a field.
     integer,intent(in),target             :: fdata_0d          !<Some data.
-    type(domainUG),intent(in),target      :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)             :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional           :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional              :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional  :: longname          !<A more descriptive name of the field.
@@ -976,7 +974,7 @@ function fms_io_unstructured_register_restart_field_i_0d(fileObj, &
     integer(INT_KIND)                     :: restart_index     !<Index of the inputted field in the fileObj%var array.
 
    !Local variables
-    type(domainUG),pointer                     :: io_domain             !<Pointer to an unstructured I/O domain.
+    type(domainUG)                             :: io_domain             !<Pointer to an unstructured I/O domain.
     integer(INT_KIND)                          :: io_domain_npes        !<The number of ranks in the unstructured I/O domain pelist.
     integer(INT_KIND),dimension(:),allocatable :: pelist                !<A pelist.
     integer,dimension(:),allocatable           :: fdata_per_rank        !<Array used to gather the scalar field values.
@@ -993,8 +991,7 @@ function fms_io_unstructured_register_restart_field_i_0d(fileObj, &
 
    !Make sure that the value of the scalar field is same across all ranks
    !in an I/O domain pelist.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
     io_domain_npes = mpp_get_UG_domain_npes(io_domain)
     allocate(pelist(io_domain_npes))
     call mpp_get_UG_domain_pelist(io_domain, &
@@ -1013,7 +1010,6 @@ function fms_io_unstructured_register_restart_field_i_0d(fileObj, &
                            //" all ranks in the I/O domain pelist.")
         endif
     endif
-    io_domain => null()
     deallocate(pelist)
     deallocate(fdata_per_rank)
 
@@ -1079,7 +1075,7 @@ function fms_io_unstructured_register_restart_field_i_1d(fileObj, &
     character(len=*),intent(in)            :: fieldname         !<The name of a field.
     integer,dimension(:),intent(in),target :: fdata_1d          !<Some data.
     integer(INT_KIND),dimension(1)         :: fdata_1d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target       :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)              :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional            :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional               :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional   :: longname          !<A more descriptive name of the field.
@@ -1196,7 +1192,7 @@ function fms_io_unstructured_register_restart_field_i_2d(fileObj, &
     character(len=*),intent(in)              :: fieldname         !<The name of a field.
     integer,dimension(:,:),intent(in),target :: fdata_2d          !<Some data.
     integer(INT_KIND),dimension(2)           :: fdata_2d_axes     !<An array describing the axes for the data.
-    type(domainUG),intent(in),target         :: domain            !<An unstructured mpp_domain.
+    type(domainUG),intent(in)                :: domain            !<An unstructured mpp_domain.
     logical,intent(in),optional              :: mandatory         !<Flag telling if the field is mandatory for the restart.
     real,intent(in),optional                 :: data_default      !<A default value for the data.
     character(len=*),intent(in),optional     :: longname          !<A more descriptive name of the field.

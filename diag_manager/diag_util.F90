@@ -96,7 +96,7 @@ use,intrinsic :: iso_c_binding, only: c_double,c_float,c_int64_t, &
   USE fms_io_mod, ONLY: get_tile_string, return_domain, string, get_instance_filename
   USE mpp_domains_mod,ONLY: domain1d, domain2d, mpp_get_compute_domain, null_domain1d, null_domain2d,&
        & OPERATOR(.NE.), OPERATOR(.EQ.), mpp_modify_domain, mpp_get_domain_components,&
-       & mpp_get_ntile_count, mpp_get_current_ntile, mpp_get_tile_id, mpp_mosaic_defined, mpp_get_tile_npes,&
+       & mpp_get_ntile_count, mpp_get_current_ntile, mpp_get_tile_id, mpp_get_tile_npes,&
        & domainUG, null_domainUG
   USE time_manager_mod,ONLY: time_type, OPERATOR(==), OPERATOR(>), NO_CALENDAR, increment_date,&
        & increment_time, get_calendar_type, get_date, get_time, leap_year, OPERATOR(-),&
@@ -206,7 +206,7 @@ CONTAINS
     INTEGER, INTENT(in) :: outnum  ! position in array output_fields
 
     REAL, ALLOCATABLE   :: global_lat(:), global_lon(:), global_depth(:)
-    INTEGER :: global_axis_size
+    INTEGER :: global_axis_size, global_axis_sizey
     INTEGER :: i,xbegin,xend,ybegin,yend,xbegin_l,xend_l,ybegin_l,yend_l
     CHARACTER(len=1) :: cart
     TYPE(domain2d) :: Domain2, Domain2_new
@@ -326,16 +326,16 @@ CONTAINS
             &                 JSTART=gstart_indx(2), JEND=gend_indx(2))
        global_axis_size =  get_axis_global_length(axes(1))
        ALLOCATE(global_lon(global_axis_size))
-       global_axis_size = get_axis_global_length(axes(2))
-       ALLOCATE(global_lat(global_axis_size))
+       global_axis_sizey = get_axis_global_length(axes(2))
+       ALLOCATE(global_lat(global_axis_sizey))
        CALL get_diag_axis_data(axes(1),global_lon)
        CALL get_diag_axis_data(axes(2),global_lat)
 
        !Potential fix for out-of-bounds error for global_lon and global_lat.
        IF ((gstart_indx(1) .GT. 0 .AND. gstart_indx(2) .GT. 0) .AND. &
-           (gstart_indx(1) .LE. global_axis_size .AND. gstart_indx(2) .LE. global_axis_size) .AND. &
+           (gstart_indx(1) .LE. global_axis_size .AND. gstart_indx(2) .LE. global_axis_sizey) .AND. &
            (gend_indx(1) .GT. 0 .AND. gend_indx(2) .GT. 0) .AND. &
-           (gend_indx(1) .LE. global_axis_size .AND. gend_indx(2) .LE. global_axis_size)) THEN
+           (gend_indx(1) .LE. global_axis_size .AND. gend_indx(2) .LE. global_axis_sizey)) THEN
           ALLOCATE(subaxis_x(gstart_indx(1):gend_indx(1)))
           ALLOCATE(subaxis_y(gstart_indx(2):gend_indx(2)))
           subaxis_x=global_lon(gstart_indx(1):gend_indx(1))
@@ -1101,6 +1101,17 @@ CONTAINS
                              !! contained differences from the previous.
     REAL, DIMENSION(1) :: tdata
     CHARACTER(len=128) :: time_units_str
+    INTEGER :: i
+
+    !Check for duplicates, and error if found.
+    DO i = 1,num_files
+        IF (trim(files(i)%name) .eq. trim(name)) THEN
+            call error_mesg("diag_util_mod::init_file", &
+                            "file "//trim(name)//" is defined more than" &
+                                //" once in the diag_table.", &
+                            FATAL)
+        ENDIF
+    ENDDO
 
     ! Check if this file has already been defined
     same_file_err=.FALSE. ! To indicate that if this file was previously defined

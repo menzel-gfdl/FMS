@@ -19,7 +19,7 @@
 
    if (.not.module_is_initialized) call fms_io_init ( )
 
-   if (.not.associated(Current_domain)) call mpp_error &
+   if (.not. mpp_domain_is_defined(Current_domain)) call mpp_error &
         (FATAL, 'set_domain not called')
 
  ! get the global data and write only on root pe

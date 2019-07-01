@@ -126,7 +126,7 @@ module fms_mod
 
 use          mpp_mod, only:  mpp_error, NOTE, WARNING, FATAL,    &
                              mpp_set_warn_level,                 &
-                             mpp_transmit, ALL_PES,              &
+                             ALL_PES,                            &
                              mpp_pe, mpp_npes, mpp_root_pe,      &
                              mpp_sync, mpp_chksum,               &
                              mpp_clock_begin, mpp_clock_end,     &

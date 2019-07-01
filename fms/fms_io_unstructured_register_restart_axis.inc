@@ -39,7 +39,7 @@ subroutine fms_io_unstructured_register_restart_axis_r1D(fileObj, &
     character(len=*),intent(in)           :: fieldname !<A name for the axis field.
     real,dimension(:),intent(in),target   :: fdata     !<Data for the axis.
     character(len=*),intent(in)           :: cartesian !<String indicating which cartesian axis this is (i.e. X, Y, Z).
-    type(domainUG),intent(in),target      :: domain    !<An unustructured mpp domain.
+    type(domainUG),intent(in)             :: domain    !<An unustructured mpp domain.
     character(len=*),intent(in),optional  :: units     !<Units for the axis.
     character(len=*),intent(in),optional  :: longname  !<A more descriptive name for the axis.
     integer(INT_KIND),intent(in),optional :: sense     !<Positive direction.
@@ -52,7 +52,7 @@ subroutine fms_io_unstructured_register_restart_axis_r1D(fileObj, &
     character(len=256)                         :: filename_suffix       !<A string appended to the end of the inputted file name.
     character(len=256)                         :: mosaic_filename       !<The filename returned by the get_mosaic_tile_file_ug routine.
     integer(INT_KIND)                          :: axis_index            !<Index of the inputted axis in the fileObj%axes array.
-    type(domainUG),pointer                     :: io_domain             !<Pointer to an unstructured I/O domain.
+    type(domainUG)                             :: io_domain             !<Pointer to an unstructured I/O domain.
     integer(INT_KIND)                          :: io_domain_npes        !<The total number of ranks in an I/O domain pelist.
     integer(INT_KIND),dimension(:),allocatable :: pelist                !<A pelist.
     integer(INT_KIND),dimension(:),allocatable :: fdata_sizes           !<Size of the axis data for each rank in the I/O domain pelist.
@@ -147,8 +147,7 @@ subroutine fms_io_unstructured_register_restart_axis_r1D(fileObj, &
 
    !Make sure that the axis size is consistent for all ranks on the
    !unstructured I/O domain pelist.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
     io_domain_npes = mpp_get_UG_domain_npes(io_domain)
     allocate(pelist(io_domain_npes))
     call mpp_get_UG_domain_pelist(io_domain, &
@@ -168,7 +167,6 @@ subroutine fms_io_unstructured_register_restart_axis_r1D(fileObj, &
                            //" unstructured I/O domain pelist.")
         endif
     endif
-    io_domain => null()
     deallocate(pelist)
     deallocate(fdata_sizes)
 
@@ -176,7 +174,7 @@ subroutine fms_io_unstructured_register_restart_axis_r1D(fileObj, &
     fileObj%axes(axis_index)%name = trim(fieldname)
 
    !Point to the inputted unstructured domain for the axis.
-    fileObj%axes(axis_index)%domain_ug => domain
+    fileObj%axes(axis_index)%domain_ug = domain
 
    !Point to the inputted axis data.
     fileObj%axes(axis_index)%data => fdata
@@ -258,7 +256,7 @@ subroutine fms_io_unstructured_register_restart_axis_i1D(fileObj, &
     character(len=*),intent(in)                      :: compressed      !<"Compressed" string (???)
     character(len=*),intent(in)                      :: compressed_axis !<"Compressed" axis string.
     integer(INT_KIND),intent(in)                     :: dimlen          !<Length of the compressed dimension.
-    type(domainUG),intent(in),target                 :: domain          !<An unustructured mpp domain.
+    type(domainUG),intent(in)                        :: domain          !<An unustructured mpp domain.
     character(len=*),intent(in),optional             :: dimlen_name     !<(???)
     character(len=*),intent(in),optional             :: dimlen_lname    !<(???)
     character(len=*),intent(in),optional             :: units           !<Units for the axis.
@@ -271,7 +269,7 @@ subroutine fms_io_unstructured_register_restart_axis_i1D(fileObj, &
     character(len=256)                         :: filename_suffix       !<A string appended to the end of the inputted file name.
     character(len=256)                         :: mosaic_filename       !<The filename returned by the get_mosaic_tile_file_ug routine.
     integer(INT_KIND)                          :: axis_index            !<Index of the inputted axis in the fileObj%axes array.
-    type(domainUG),pointer                     :: io_domain             !<Pointer to an unstructured I/O domain.
+    type(domainUG)                             :: io_domain             !<Pointer to an unstructured I/O domain.
     integer(INT_KIND)                          :: io_domain_npes        !<The total number of ranks in an I/O domain pelist.
     integer(INT_KIND),dimension(:),allocatable :: pelist                !<A pelist.
 
@@ -360,12 +358,11 @@ subroutine fms_io_unstructured_register_restart_axis_i1D(fileObj, &
     fileObj%axes(axis_index)%name = trim(fieldname)
 
    !Point to the inputted unstructured domain.
-    fileObj%axes(axis_index)%domain_ug => domain
+    fileObj%axes(axis_index)%domain_ug = domain
 
    !Initialize the number of data elements each rank in an unstructured I/O
    !domain is responsible for.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
     io_domain_npes = mpp_get_UG_domain_npes(io_domain)
     allocate(fileObj%axes(axis_index)%nelems(io_domain_npes))
     fileObj%axes(axis_index)%nelems = 0
@@ -397,8 +394,6 @@ subroutine fms_io_unstructured_register_restart_axis_i1D(fileObj, &
                     fileObj%axes(axis_index)%nelems, &
                     pelist)
 
-   !Nullify local pointers and deallocate local allocatables.
-    io_domain => null()
     deallocate(pelist)
 
    !Set the "compressed" string for the axis.
@@ -460,7 +455,7 @@ subroutine fms_io_unstructured_register_restart_axis_u(fileObj, &
     character(len=*),intent(in)           :: filename  !<A name of a file.
     character(len=*),intent(in)           :: fieldname !<A name for the axis field.
     integer(INT_KIND),intent(in)          :: nelems    !<Number of elements on the axis for the current rank.
-    type(domainUG),intent(in),target      :: domain    !<An unustructured mpp domain.
+    type(domainUG),intent(in)             :: domain    !<An unustructured mpp domain.
     character(len=*),intent(in),optional  :: units     !<Units for the axis.
     character(len=*),intent(in),optional  :: longname  !<A more descriptive name for the axis.
 
@@ -470,7 +465,7 @@ subroutine fms_io_unstructured_register_restart_axis_u(fileObj, &
     character(len=256)                         :: filename_suffix       !<A string appended to the end of the inputted file name.
     character(len=256)                         :: mosaic_filename       !<The filename returned by the get_mosaic_tile_file_ug routine.
     integer(INT_KIND)                          :: axis_index            !<Index of the inputted axis in the fileObj%axes array.
-    type(domainUG),pointer                     :: io_domain             !<Pointer to an unstructured I/O domain.
+    type(domainUG)                             :: io_domain             !<Pointer to an unstructured I/O domain.
     integer(INT_KIND)                          :: io_domain_npes        !<The total number of ranks in an I/O domain pelist.
     integer(INT_KIND),dimension(:),allocatable :: pelist                !<A pelist.
 
@@ -549,12 +544,11 @@ subroutine fms_io_unstructured_register_restart_axis_u(fileObj, &
     fileObj%axes(axis_index)%name = trim(fieldname)
 
    !Point to the inputted unstructured domain.
-    fileObj%axes(axis_index)%domain_ug => domain
+    fileObj%axes(axis_index)%domain_ug = domain
 
    !Initialize the number of data elements each rank in an unstructured I/O
    !domain is responsible for.
-    io_domain => null()
-    io_domain => mpp_get_UG_io_domain(domain)
+    io_domain = mpp_get_UG_io_domain(domain)
     io_domain_npes = mpp_get_UG_domain_npes(io_domain)
     allocate(fileObj%axes(axis_index)%nelems(io_domain_npes))
     fileObj%axes(axis_index)%nelems = 0
@@ -568,8 +562,6 @@ subroutine fms_io_unstructured_register_restart_axis_u(fileObj, &
                     fileObj%axes(axis_index)%nelems, &
                     pelist)
 
-   !Nullify local pointers and deallocate local allocatables.
-    io_domain => null()
     deallocate(pelist)
 
    !Set the units for the axis.

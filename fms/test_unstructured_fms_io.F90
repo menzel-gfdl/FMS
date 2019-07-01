@@ -645,7 +645,7 @@ contains
         integer(INT_KIND),intent(in) :: npes                !<The total number of ranks used in this test.
 
        !Local variables
-        type(domainUG),pointer                     :: io_domain                                !<Pointer to unstructured domain's I/O domain.
+        type(domainUG)                             :: io_domain                                !<unstructured domain's I/O domain.
         integer(INT_KIND)                          :: io_domain_npes                           !<The total number of ranks in the unstructured I/O domain pelist.
         integer(INT_KIND),dimension(:),allocatable :: pelist                                   !<A pelist.
         character(len=256)                         :: restart_file_name                        !<Name for the restart file.
@@ -752,13 +752,11 @@ contains
         call mpp_sync()
 
        !Get the pelist associated with the unstructured I/O domain.
-        io_domain => null()
-        io_domain => mpp_get_UG_io_domain(unstructured_domain)
+        io_domain = mpp_get_UG_io_domain(unstructured_domain)
         io_domain_npes = mpp_get_UG_domain_npes(io_domain)
         allocate(pelist(io_domain_npes))
         call mpp_get_UG_domain_pelist(io_domain, &
                                       pelist)
-        io_domain => null()
 
        !Set the name of the restart file.
         restart_file_name = "test_1_unstructured_restart_file.nc"

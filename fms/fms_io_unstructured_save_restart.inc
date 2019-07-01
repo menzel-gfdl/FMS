@@ -53,7 +53,7 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
    !   written and whether or not field data is written is determined by time_level.
 
    !Local variables
-    type(domainUG),pointer                      :: domain            !<A pointer to an unstructured mpp domain.
+    type(domainUG)                              :: domain            !< an unstructured mpp domain.
     integer(INT_KIND)                           :: mpp_action        !<Parameter specifying how the file will be acted on (overwritten or appended to).
     logical(INT_KIND)                           :: write_meta_data   !<Flag telling whether or not metadata will be written to the restart file.
     logical(INT_KIND)                           :: write_field_data  !<Flag telling whether or not field data will be written to the restart file.
@@ -111,11 +111,10 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
 
    !Make sure that all registered axes are associated with the same
    !unstructured domain.
-    domain => null()
     do j = 1,size(fileObj%axes)
         if (j .eq. CIDX .or. j .eq. HIDX .or. j .eq. UIDX) then
             if (allocated(fileObj%axes(j)%idx)) then
-                if (.not. associated(fileObj%axes(j)%domain_ug)) then
+                if (.not. mpp_domainUG_is_defined(fileObj%axes(j)%domain_ug)) then
                     call mpp_error(FATAL, &
                                    "fms_io_unstructured_save_restart:" &
                                    //" the axis "//trim(fileObj%axes(j)%name) &
@@ -123,7 +122,7 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
                                    //" was not registered with an unstructured" &
                                    //" mpp domain.")
                 endif
-                if (associated(domain)) then
+                if (mpp_domainUG_is_defined(domain)) then
                     if (.not. (domain .EQ. fileObj%axes(j)%domain_ug)) then
                         call mpp_error(FATAL, &
                                        "fms_io_unstructured_save_restart:" &
@@ -132,12 +131,12 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
                                        //" different unstructured mpp domains.")
                     endif
                 else
-                    domain => fileObj%axes(j)%domain_ug
+                    domain = fileObj%axes(j)%domain_ug
                 endif
             endif
         else
             if (associated(fileObj%axes(j)%data)) then
-                if (.not. associated(fileObj%axes(j)%domain_ug)) then
+                if (.not. mpp_domainUG_is_defined(fileObj%axes(j)%domain_ug)) then
                     call mpp_error(FATAL, &
                                    "fms_io_unstructured_save_restart:" &
                                    //" the axis "//trim(fileObj%axes(j)%name) &
@@ -145,7 +144,7 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
                                    //" was not registered with an unstructured" &
                                    //" mpp domain.")
                 endif
-                if (associated(domain)) then
+                if (mpp_domainUG_is_defined(domain)) then
                     if (.not. (domain .EQ. fileObj%axes(j)%domain_ug)) then
                         call mpp_error(FATAL, &
                                        "fms_io_unstructured_save_restart:" &
@@ -154,7 +153,7 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
                                        //" different unstructured mpp domains.")
                     endif
                 else
-                    domain => fileObj%axes(j)%domain_ug
+                    domain = fileObj%axes(j)%domain_ug
                 endif
             endif
         endif
@@ -163,7 +162,7 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
    !Make sure that all registered fields are associated with the same
    !unstructured domain that all axes were registered with.
     do j = 1,fileObj%nvar
-        if (.not. associated(fileObj%var(j)%domain_ug)) then
+        if (.not. mpp_domainUG_is_defined(fileObj%var(j)%domain_ug)) then
             call mpp_error(FATAL, &
                            "fms_io_unstructured_save_restart:" &
                            //" the field "//trim(fileObj%var(j)%name) &
@@ -664,7 +663,6 @@ subroutine fms_io_unstructured_save_restart(fileObj, &
     call mpp_close(funit)
 
    !Nullify local pointers.
-    domain => null()
     axis => null()
     cur_var => null()
 

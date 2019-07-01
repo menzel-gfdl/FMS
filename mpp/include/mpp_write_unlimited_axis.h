@@ -26,7 +26,7 @@
                                                                ! same order as the io_domain pelist.
       integer, allocatable :: pelist(:)
       integer :: i,j,nelems,npes
-      type(domain2d), pointer :: io_domain=>NULL()
+      type(domain2d) :: io_domain
       MPP_TYPE_, allocatable, dimension(:) :: rbuff
 
       call mpp_clock_begin(mpp_write_clock)
@@ -34,8 +34,8 @@
       if( .NOT.module_is_initialized )call mpp_error( FATAL, 'MPP_WRITE_UNLIMITED_AXIS_1D_: must first call mpp_io_init.' )
       if( .NOT.mpp_file(unit)%valid )call mpp_error( FATAL, 'MPP_WRITE_UNLIMITED_AXIS_1D_: invalid unit number.' )
 
-      io_domain=>mpp_get_io_domain(domain) 
-      if (.not. ASSOCIATED(io_domain)) call mpp_error( FATAL, 'MPP_WRITE_UNLIMITED_AXIS_1D_: io_domain must be defined.' )
+      io_domain=mpp_get_io_domain(domain) 
+      if (.not. mpp_domain_is_defined(io_domain)) call mpp_error( FATAL, 'MPP_WRITE_UNLIMITED_AXIS_1D_: io_domain must be defined.' )
       npes = mpp_get_domain_npes(io_domain)
       allocate(pelist(npes))
       call mpp_get_pelist(io_domain,pelist)
