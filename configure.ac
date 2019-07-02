@@ -70,6 +70,7 @@ AC_CONFIG_FILES([Makefile
         fms2_io/include/Makefile
         mpp/Makefile
         mpp/include/Makefile
+        mpp/domains_include/Makefile
         tridiagonal/Makefile
         tracer_manager/Makefile
         topography/Makefile

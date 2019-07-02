@@ -4,11 +4,12 @@
 # Ed Hartnett 2/22/19
 
 # Descend into include directory.
-SUBDIRS = include
+SUBDIRS = include domains_include
 
 # Include .h and .mod files.
 AM_CPPFLAGS = -I${top_srcdir}/include
 AM_CPPFLAGS += -I${top_srcdir}/mpp/include
+AM_CPPFLAGS += -I${top_srcdir}/mpp/domains_include
 
 # Build these uninstalled convenience libraries.
 noinst_LTLIBRARIES = libmpp_parameter.la libmpp_data.la libmpp.la	\
