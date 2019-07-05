@@ -11,7 +11,7 @@ function compute_global_checksum_2d(fileobj, variable_name, variable_data, is_de
 
   integer :: xdim
   integer :: ydim
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: isd
@@ -40,7 +40,7 @@ function compute_global_checksum_2d(fileobj, variable_name, variable_data, is_de
     chksum = ""
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(variable_data, xdim), size(variable_data, ydim), &
                       io_domain, xpos, ypos, isd, isc, xc_size, jsd, jsc, &
                       yc_size, buffer_includes_halos)
@@ -122,7 +122,7 @@ function compute_global_checksum_3d(fileobj, variable_name, variable_data, is_de
 
   integer :: xdim
   integer :: ydim
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: isd
@@ -151,7 +151,7 @@ function compute_global_checksum_3d(fileobj, variable_name, variable_data, is_de
     chksum = ""
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(variable_data, xdim), size(variable_data, ydim), &
                       io_domain, xpos, ypos, isd, isc, xc_size, jsd, jsc, &
                       yc_size, buffer_includes_halos)
@@ -233,7 +233,7 @@ function compute_global_checksum_4d(fileobj, variable_name, variable_data, is_de
 
   integer :: xdim
   integer :: ydim
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: isd
@@ -262,7 +262,7 @@ function compute_global_checksum_4d(fileobj, variable_name, variable_data, is_de
     chksum = ""
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(variable_data, xdim), size(variable_data, ydim), &
                       io_domain, xpos, ypos, isd, isc, xc_size, jsd, jsc, &
                       yc_size, buffer_includes_halos)

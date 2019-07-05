@@ -10,7 +10,7 @@ use setup
 type(Params) :: test_params
 type(domain2d) :: domain
 integer :: err
-type(domain2d), pointer :: io_domain
+type(domain2d) :: io_domain
 integer :: isc
 integer :: iec
 integer :: nx
@@ -73,8 +73,8 @@ call mpi_barrier(mpi_comm_world, err)
 call mpi_check(err)
 
 !Get the sizes of the I/O compute and data domains.
-io_domain => mpp_get_io_domain(domain)
-if (.not. associated(io_domain)) then
+io_domain = mpp_get_io_domain(domain)
+if (.not. mpp_domain_is_defined(io_domain)) then
   call mpp_error(fatal, "I/O domain is not associated.")
 endif
 call mpp_get_compute_domain(io_domain, xbegin=isc, xend=iec, xsize=nx, ybegin=jsc, yend=jec, ysize=ny)

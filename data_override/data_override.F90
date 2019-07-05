@@ -589,7 +589,7 @@ subroutine get_domainUG(gridname, UGdomain, comp_domain)
   character(len=3), intent(in) :: gridname
   type(domainUG), intent(inout) :: UGdomain
   integer, intent(out), optional :: comp_domain(4) ! istart,iend,jstart,jend for compute domain
-  type(domain2D) :: SGdomainD
+  type(domain2D) :: SGdomain
 
   UGdomain = NULL_DOMAINUG
   select case (gridname)

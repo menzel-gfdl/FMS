@@ -139,7 +139,6 @@ use mpp_domains_mod,   only: mpp_get_UG_domain_pelist
 use mpp_io_mod,        only: mpp_io_unstructured_write
 use mpp_io_mod,        only: mpp_io_unstructured_read
 use mpp_io_mod,        only: mpp_file_is_opened
-use mpp_io_mod,        only: mpp_get_file_unit
 !----------
 
 implicit none
@@ -3991,17 +3990,12 @@ subroutine restore_state_all(fileObj, directory, nonfatal_missing_files)
 
   if (fexist) then
       nfile = 1
-      if (mpp_file_is_opened(trim(restartpath),form)) then
-          unit(nfile) = mpp_get_file_unit(trim(restartpath), &
-                                          form)
-      else
-          call mpp_open(unit(nfile), &
-                        trim(restartpath), &
-                        form=form, &
-                        action=MPP_RDONLY, &
-                        threading=MPP_MULTI, &
-                        domain=array_domain(domain_idx))
-      endif
+      call mpp_open(unit(nfile), &
+                    trim(restartpath), &
+                    form=form, &
+                    action=MPP_RDONLY, &
+                    threading=MPP_MULTI, &
+                    domain=array_domain(domain_idx))
   else
       do while(.true.)
           if (num_restart < 10) then
@@ -4026,14 +4020,8 @@ subroutine restore_state_all(fileObj, directory, nonfatal_missing_files)
               nfile = nfile + 1
               if (nfile > max_split_file) call mpp_error(FATAL, &
                   "fms_io(restore_state_all): nfile is larger than max_split_file, increase max_split_file")
-
-              if (mpp_file_is_opened(trim(filepath),form)) then
-                  unit(nfile) = mpp_get_file_unit(trim(restartpath), &
-                                                  form)
-              else
-                  call mpp_open(unit(nfile), trim(filepath), form=form,action=MPP_RDONLY,threading=MPP_MULTI, &
-                                fileset=MPP_SINGLE)
-              endif
+              call mpp_open(unit(nfile), trim(filepath), form=form,action=MPP_RDONLY,threading=MPP_MULTI, &
+                            fileset=MPP_SINGLE)
           else
               exit
           endif
@@ -7385,22 +7373,12 @@ subroutine close_file (unit, status, dist)
   if (unit == stdlog()) return
   if (present(status)) then
      if (lowercase(trim(status)) == 'delete') then
-
-if (mpp_pe() .eq. 0) then
-    write(6,*) "closed fortran unit",unit
-endif
-
         call mpp_close (unit, action=MPP_DELETE)
 !       close(unit)
      else
         call mpp_error(FATAL,'fms_io(close_file): status should be DELETE')
      endif
   else
-
-if (mpp_pe() .eq. 0) then
-    write(6,*) "closed fortran unit",unit
-endif
-
      call mpp_close (unit)
 !    close(unit)
   endif
@@ -7879,19 +7857,12 @@ function open_file(file, form, action, access, threading, recl, dist) result(uni
     integer :: index_file
 
     get_global_att_value_text = .false.
-
-    if (.not. mpp_file_is_opened(trim(file),MPP_NETCDF)) then
-        call mpp_open(unit, &
-                      trim(file), &
-                      action=MPP_RDONLY, &
-                      form=MPP_NETCDF, &
-                      threading=MPP_MULTI, &
-                      fileset=MPP_SINGLE)
-    else
-        unit = mpp_get_file_unit(trim(file), &
-                                 MPP_NETCDF)
-    endif
-
+    call mpp_open(unit, &
+                  trim(file), &
+                  action=MPP_RDONLY, &
+                  form=MPP_NETCDF, &
+                  threading=MPP_MULTI, &
+                  fileset=MPP_SINGLE)
     call mpp_get_info(unit, ndim, nvar, natt, ntime)
     allocate(global_atts(natt))
     call mpp_get_atts(unit,global_atts)

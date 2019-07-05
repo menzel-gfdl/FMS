@@ -417,12 +417,12 @@ function create_diskless_domain_file(fileobj, domain, path) &
   character(len=*), intent(in), optional :: path !< File path.
   logical :: success
 
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: pelist_size
   integer, dimension(:), allocatable :: pelist
 
-  io_domain => mpp_get_io_domain(domain)
-  if (.not. associated(io_domain)) then
+  io_domain = mpp_get_io_domain(domain)
+  if (.not. mpp_domain_is_defined(io_domain)) then
     call error("input domain does not have an io_domain.")
   endif
   pelist_size = mpp_get_domain_npes(io_domain)
@@ -558,12 +558,12 @@ function create_diskless_unstructured_domain_file(fileobj, domain, path) &
   character(len=*), intent(in), optional :: path !< File path.
   logical :: success
 
-  type(domainug), pointer :: io_domain
+  type(domainug) :: io_domain
   integer :: pelist_size
   integer, dimension(:), allocatable :: pelist
 
-  io_domain => mpp_get_ug_io_domain(domain)
-  if (.not. associated(io_domain)) then
+  io_domain = mpp_get_ug_io_domain(domain)
+  if (.not. mpp_domainug_is_defined(io_domain)) then
     call error("input domain does not have an io_domain.")
   endif
   pelist_size = mpp_get_ug_domain_npes(io_domain)

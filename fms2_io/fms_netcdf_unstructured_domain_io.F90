@@ -67,7 +67,7 @@ function open_unstructured_domain_file(fileobj, path, mode, domain, nc_format, &
                                               !! to false.
   logical :: success
 
-  type(domainug), pointer :: io_domain
+  type(domainug) :: io_domain
   integer :: pelist_size
   integer, dimension(:), allocatable :: pelist
   character(len=256) :: buf
@@ -75,8 +75,8 @@ function open_unstructured_domain_file(fileobj, path, mode, domain, nc_format, &
   integer :: tile_id
 
   !Get the input domain's I/O domain pelist.
-  io_domain => mpp_get_ug_io_domain(domain)
-  if (.not. associated(io_domain)) then
+  io_domain = mpp_get_ug_io_domain(domain)
+  if (.not. mpp_domainug_is_defined(io_domain)) then
     call error("input domain does not have an io_domain.")
   endif
   pelist_size = mpp_get_ug_domain_npes(io_domain)
@@ -135,13 +135,13 @@ subroutine register_unstructured_dimension(fileobj, dim_name)
   type(FmsNetcdfUnstructuredDomainFile_t), intent(inout) :: fileobj !< File object.
   character(len=*), intent(in) :: dim_name !< Dimension name.
 
-  type(domainug),pointer :: io_domain
+  type(domainug) :: io_domain
   integer, dimension(:), allocatable :: c
   integer, dimension(:), allocatable :: e
 
   allocate(c(size(fileobj%pelist)))
   allocate(e(size(fileobj%pelist)))
-  io_domain => mpp_get_ug_io_domain(fileobj%domain)
+  io_domain = mpp_get_ug_io_domain(fileobj%domain)
   call mpp_get_ug_compute_domains(io_domain, begin=c, size=e)
   if (c(1) .ne. 1) then
     c(:) = c(:) - c(1) + 1

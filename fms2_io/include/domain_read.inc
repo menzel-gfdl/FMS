@@ -89,7 +89,7 @@ subroutine domain_read_2d(fileobj, variable_name, vdata, unlim_dim_level, &
 
   integer :: xdim_index
   integer :: ydim_index
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: i
@@ -118,7 +118,7 @@ subroutine domain_read_2d(fileobj, variable_name, vdata, unlim_dim_level, &
                           edge_lengths=edge_lengths, broadcast=.true.)
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(vdata, xdim_index), size(vdata, ydim_index), io_domain, &
                       xpos, ypos, isd, isc, xc_size, jsd, jsc, yc_size, buffer_includes_halos)
   c(:) = 1
@@ -287,7 +287,7 @@ subroutine domain_read_3d(fileobj, variable_name, vdata, unlim_dim_level, &
 
   integer :: xdim_index
   integer :: ydim_index
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: i
@@ -316,7 +316,7 @@ subroutine domain_read_3d(fileobj, variable_name, vdata, unlim_dim_level, &
                           edge_lengths=edge_lengths, broadcast=.true.)
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(vdata, xdim_index), size(vdata, ydim_index), io_domain, &
                       xpos, ypos, isd, isc, xc_size, jsd, jsc, yc_size, buffer_includes_halos)
   c(:) = 1
@@ -485,7 +485,7 @@ subroutine domain_read_4d(fileobj, variable_name, vdata, unlim_dim_level, &
 
   integer :: xdim_index
   integer :: ydim_index
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: i
@@ -514,7 +514,7 @@ subroutine domain_read_4d(fileobj, variable_name, vdata, unlim_dim_level, &
                           edge_lengths=edge_lengths, broadcast=.true.)
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(vdata, xdim_index), size(vdata, ydim_index), io_domain, &
                       xpos, ypos, isd, isc, xc_size, jsd, jsc, yc_size, buffer_includes_halos)
   c(:) = 1
@@ -683,7 +683,7 @@ subroutine domain_read_5d(fileobj, variable_name, vdata, unlim_dim_level, &
 
   integer :: xdim_index
   integer :: ydim_index
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: xpos
   integer :: ypos
   integer :: i
@@ -712,7 +712,7 @@ subroutine domain_read_5d(fileobj, variable_name, vdata, unlim_dim_level, &
                           edge_lengths=edge_lengths, broadcast=.true.)
     return
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   call domain_offsets(size(vdata, xdim_index), size(vdata, ydim_index), io_domain, &
                       xpos, ypos, isd, isc, xc_size, jsd, jsc, yc_size, buffer_includes_halos)
   c(:) = 1

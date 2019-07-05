@@ -290,7 +290,7 @@ function open_domain_file(fileobj, path, mode, domain, nc_format, is_restart) &
   integer, dimension(2) :: io_layout
   integer, dimension(1) :: tile_id
   character(len=256) :: combined_filepath
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   character(len=256) :: distributed_filepath
   integer :: pelist_size
   integer, dimension(:), allocatable :: pelist
@@ -307,8 +307,8 @@ function open_domain_file(fileobj, path, mode, domain, nc_format, is_restart) &
   endif
 
   !Get the path of a "distributed" file.
-  io_domain => mpp_get_io_domain(domain)
-  if (.not. associated(io_domain)) then
+  io_domain = mpp_get_io_domain(domain)
+  if (.not. mpp_domain_is_defined(io_domain)) then
     call error("input domain does not have an io_domain.")
   endif
   if (io_layout(1)*io_layout(2) .gt. 1) then
@@ -386,7 +386,7 @@ subroutine register_domain_decomposed_dimension(fileobj, dim_name, xory, domain_
   integer, intent(in), optional :: domain_position !< Domain position.
 
   integer :: dpos
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: domain_size
   integer :: dim_size
 
@@ -394,7 +394,7 @@ subroutine register_domain_decomposed_dimension(fileobj, dim_name, xory, domain_
   if (mpp_domain_is_symmetry(fileobj%domain) .and. present(domain_position)) then
     dpos = domain_position
   endif
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   if (string_compare(xory, x, .true.)) then
     if (dpos .ne. center .and. dpos .ne. east) then
       call error("only center or east supported for x dimensions.")
@@ -430,14 +430,14 @@ subroutine add_domain_attribute(fileobj, variable_name)
   type(FmsNetcdfDomainFile_t), intent(inout) :: fileobj !< File object.
   character(len=*), intent(in) :: variable_name !< Variable name.
 
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: dpos
   integer :: sg
   integer :: eg
   integer :: s
   integer :: e
 
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   dpos = get_domain_decomposed_index(variable_name, fileobj%xdims, fileobj%nx)
   if (dpos .ne. variable_not_found) then
     dpos = fileobj%xdims(dpos)%pos
@@ -609,13 +609,13 @@ subroutine get_compute_domain_dimension_indices(fileobj, dimname, indices)
   character(len=*), intent(in) :: dimname !< Name of dimension variable.
   integer, dimension(:), allocatable, intent(inout) :: indices !< Compute domain indices.
 
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: dpos
   integer :: s
   integer :: e
   integer :: i
 
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   dpos = get_domain_decomposed_index(dimname, fileobj%xdims, fileobj%nx)
   if (dpos .ne. variable_not_found) then
     dpos = fileobj%xdims(dpos)%pos
@@ -682,10 +682,10 @@ subroutine get_global_io_domain_indices(fileobj, dimname, is, ie)
   integer, intent(out) :: is !< Staring index of I/O global domain.
   integer, intent(out) :: ie !< Ending index of I/O global domain.
 
-  type(domain2d), pointer :: io_domain
+  type(domain2d) :: io_domain
   integer :: dpos
 
-  io_domain => mpp_get_io_domain(fileobj%domain)
+  io_domain = mpp_get_io_domain(fileobj%domain)
   dpos = get_domain_decomposed_index(dimname, fileobj%xdims, fileobj%nx)
   if (dpos .ne. variable_not_found) then
     dpos = fileobj%xdims(dpos)%pos
